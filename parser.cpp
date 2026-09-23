@@ -1,9 +1,21 @@
 #include <fstream>
 #include<iostream>
+#include <map>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 using namespace std;
 
+struct BrokenWord{
+    string word;
+    vector<string> letters;
+    int count;
+    BrokenWord(string word, vector<string> letters, int count){
+        this->word = word;
+        this->letters = letters;
+        this->count = count;
+    }
+};
 string to_lowercase(string s){
     for(char& c: s){
         c = tolower(c);
@@ -37,10 +49,10 @@ void printVector(vector<string>& vect){
 }
 
 void bpe(vector<string>& allWords){
-
     unordered_map<string, int> distinctWordCounts;
     unordered_set<char> vocab;
-    vector<vector<string>> wordsBrokenDown;
+    vector<BrokenWord> wordsBrokenDown;
+    map<pair<string, string>, int> pairWiseCounts;
 
     for(string& s: allWords){
         for(char& c: s){
@@ -50,21 +62,35 @@ void bpe(vector<string>& allWords){
         if (it != distinctWordCounts.end()) {
             distinctWordCounts[s] += 1;
         }else{
-            vector<string> brokenWord;
-            for(char& c: s){
-                brokenWord.push_back(string(1, c));
-            }
-            brokenWord.push_back("$");
-            wordsBrokenDown.push_back(brokenWord);
             distinctWordCounts[s] = 1;
         }
     }
-    for(vector<string>& s: wordsBrokenDown){
-        cout << "< ";
-        for(string c: s){
-            cout << c << ", ";
+    for(auto& it: distinctWordCounts){
+        vector<string> letters;
+        for(char c: it.first){
+            letters.push_back(string(1, c));
         }
-        cout << ">" << endl;
+        letters.push_back("$");
+        wordsBrokenDown.push_back(BrokenWord(it.first, letters, it.second));
+    }
+    for(BrokenWord& bw: wordsBrokenDown){
+        int len = bw.letters.size();
+        for(int i = 0; i < len - 1; i++){
+            pair<string, string> currPair = {bw.letters[i], bw.letters[i+1]};
+            auto it = pairWiseCounts.find(currPair);
+            if(it != pairWiseCounts.end()){
+                pairWiseCounts[currPair] += bw.count;
+            }else{
+                pairWiseCounts[currPair] = bw.count;
+            }
+        }
+    }
+    vector<pair<string, string>> merges;
+    for(BrokenWord& bw: wordsBrokenDown){
+        
+    }
+    for(auto& it: pairWiseCounts){
+        cout << "{" << it.first.first << "," << it.first.second << "}" << ":" << it.second << endl;
     }
 }
 int main(){
