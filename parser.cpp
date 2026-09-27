@@ -1,22 +1,12 @@
-#include <fstream>
 #include<iostream>
 #include <map>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include "parser.h" 
 using namespace std;
 
-struct BrokenWord{
-    string word;
-    vector<string> letters;
-    int count;
-    BrokenWord(string word, vector<string> letters, int count){
-        this->word = word;
-        this->letters = letters;
-        this->count = count;
-    }
-};
 string to_lowercase(string s){
     for(char& c: s){
         c = tolower(c);
@@ -191,36 +181,4 @@ string decode(const vector<int>& encodedTokens, map<int, string>& itos) {
     }
     cout << text;
     return text;
-}
-
-int main(){
-    ifstream file("input.txt");
-    if(!file.is_open()){
-        cout << "failed to open file" << endl;
-    }
-    string line;
-    vector<string> allWords;
-    string text;
-    while(getline(file, line)){
-        text += line;
-        vector<string> parsed = parseIntoWords(line);
-        allWords.insert(allWords.end(), parsed.begin(), parsed.end());
-    }
-
-    vector<string> vocab;
-    vector<pair<string, string>> merges;
-    bpe(allWords, vocab, merges);
-
-    map<string, int> stoi;
-    for(int i = 0; i < vocab.size(); i++){
-        stoi[vocab[i]] = i;
-    }
-    map<int, string> itos;
-    for(auto& it: stoi){
-        itos[it.second] = it.first;
-    }
-
-    vector<int> encodedTokens = encode(allWords, merges, stoi);
-    decode(encodedTokens, itos);
-    return 0;
 }
