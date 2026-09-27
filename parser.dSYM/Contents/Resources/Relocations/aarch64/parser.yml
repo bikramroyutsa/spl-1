@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/bikramroyutsa/codes/iit/2-1/spl-1/parser'
+relocations:     []
+...

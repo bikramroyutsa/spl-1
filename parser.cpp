@@ -1,6 +1,7 @@
 #include <fstream>
 #include<iostream>
 #include <map>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -96,11 +97,10 @@ void merge(vector<pair<string, string>>& merges, vector<BrokenWord>& wordsBroken
 
 
 }
-void bpe(vector<string>& allWords){
-    unordered_map<string, int> distinctWordCounts;
+void bpe(vector<string>& allWords, vector<string> &vocab,
+    vector<pair<string, string>>& merges){
 
-    vector<string> vocab;
-    vector<pair<string, string>> merges;
+    unordered_map<string, int> distinctWordCounts;
 
     vector<BrokenWord> wordsBrokenDown;
     map<pair<string, string>, int> pairWiseCounts;
@@ -140,9 +140,39 @@ void bpe(vector<string>& allWords){
     //     }
     //     cout << endl;
     // }
-    for(string s: vocab){
-        cout << s << " ";
+
+}
+
+vector<int> encode(vector<string> allWords, vector<pair<string, string>> merges, 
+    map<string, int>& stoi){
+         
+    vector<int> encodedTokens;
+    for(string word: allWords){
+        vector<string> letters;
+        for(char c: word){
+            letters.push_back(string(1, c));
+        }
+        letters.push_back("$");
+
+        for(auto& it: merges){
+            vector<string> newLetters;
+            for(int i = 0; i < letters.size(); i++){
+                if(i < letters.size() - 1 && letters[i] == it.first && letters[i + 1]  == it.second){
+                    newLetters.push_back(letters[i] + letters[i + 1]);
+                    i++;
+                }else{
+                    newLetters.push_back(letters[i]);
+                }
+            }
+            letters = newLetters;
+        }
+        // printVector(letters);
+        for(string& s: letters){
+            encodedTokens.push_back(stoi[s]);
+        }
     }
+
+    return encodedTokens;
 }
 int main(){
     ifstream file("input.txt");
@@ -151,12 +181,27 @@ int main(){
     }
     string line;
     vector<string> allWords;
+    string text;
     while(getline(file, line)){
+        text += line;
         vector<string> parsed = parseIntoWords(line);
         allWords.insert(allWords.end(), parsed.begin(), parsed.end());
-        // printVector(parsed); 
     }
-    // printVector(allWords);
-    bpe(allWords);
+
+    vector<string> vocab;
+    vector<pair<string, string>> merges;
+    bpe(allWords, vocab, merges);
+
+    map<string, int> stoi;
+    for(int i = 0; i < vocab.size(); i++){
+        stoi[vocab[i]] = i;
+    }
+    map<int, string> itos;
+    for(auto& it: stoi){
+        itos[it.second] = it.first;
+    }
+
+    vector<int> encodedTokens = encode(allWords, merges, stoi);
+
     return 0;
 }
