@@ -34,6 +34,9 @@ vector<string> parseIntoWords(string line){
             if(s != ""){
                 words.push_back(s);
                 s = "";
+                if(c != ' '){
+                    words.push_back(string(1, c));
+                }
             }
         }
     }
@@ -143,7 +146,7 @@ void bpe(vector<string>& allWords, vector<string> &vocab,
 
 }
 
-vector<int> encode(vector<string> allWords, vector<pair<string, string>> merges, 
+vector<int> encode(vector<string> allWords, vector<pair<string, string>>& merges, 
     map<string, int>& stoi){
          
     vector<int> encodedTokens;
@@ -174,6 +177,22 @@ vector<int> encode(vector<string> allWords, vector<pair<string, string>> merges,
 
     return encodedTokens;
 }
+string decode(const vector<int>& encodedTokens, map<int, string>& itos) {
+    string text = "";
+
+    for (int t : encodedTokens) {
+        string piece = itos[t];
+        
+        if (piece[piece.size() - 1]== '$') {
+            text += piece.substr(0, piece.size() - 1) + " ";
+        } else {
+            text += piece; 
+        }
+    }
+    cout << text;
+    return text;
+}
+
 int main(){
     ifstream file("input.txt");
     if(!file.is_open()){
@@ -202,6 +221,6 @@ int main(){
     }
 
     vector<int> encodedTokens = encode(allWords, merges, stoi);
-
+    decode(encodedTokens, itos);
     return 0;
 }
