@@ -1,3 +1,28 @@
-.vscode
-.prettierignore
+# Compiled executables & binaries
+*.out
 a.out
+parser
+
+# Object files & archives
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+
+# Debug symbols & folders (macOS / Clang / GCC)
+*.dSYM/
+
+# IDE & Editor files
+.vscode/
+.idea/
+.prettierignore
+*.swp
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
