@@ -8,7 +8,8 @@ struct BrokenWord {
     string word;
     vector<string> letters;
     int count;
-    BrokenWord(string word, vector<string> letters, int count);
+    BrokenWord(string word, vector<string> letters, int count)
+        : word(word), letters(letters), count(count) {}
 };
 
 vector<string> parseIntoWords(string line);

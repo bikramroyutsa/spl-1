@@ -179,6 +179,6 @@ string decode(const vector<int>& encodedTokens, map<int, string>& itos) {
             text += piece; 
         }
     }
-    cout << text;
+    // cout << text;
     return text;
 }

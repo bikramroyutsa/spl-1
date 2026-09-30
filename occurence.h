@@ -1,4 +1,8 @@
+#pragma once
 #include <map>
-#include<vector>
+#include <vector>
+#include <string>
 using namespace std;
-void matrixBuilder(const int vocabSize, vector<int>& encodedTokens, map<string, int>& stoi);
+
+void pmi(vector<vector<float>>& matrix, vector<int>& tokenCounts, int totaltokens);
+vector<vector<float>> matrixBuilder(const int vocabSize, vector<int>& encodedTokens);
