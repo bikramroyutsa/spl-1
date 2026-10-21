@@ -71,8 +71,11 @@ void merge(vector<pair<string, string>>& merges, vector<BrokenWord>& wordsBroken
     if(maxCount < 1){
         return;
     }
-    merges.push_back(bestpair);
-    vocab.push_back(bestpair.first + bestpair.second);
+    merges.push_back(bestpair); 
+    string newToken = bestpair.first + bestpair.second;
+    if (find(vocab.begin(), vocab.end(), newToken) == vocab.end()) {
+        vocab.push_back(newToken);
+    }
     for(BrokenWord& it: wordsBrokenDown){
         vector<string> newLetters;
         int len = it.letters.size();
@@ -103,12 +106,6 @@ void bpe(vector<string>& allWords, vector<string> &vocab,
         for(char& c: s){
             uniqueChars.insert(string(1, c));
         }
-        // auto it = distinctWordCounts.find(s);
-        // if (it != distinctWordCounts.end()) {
-        //     distinctWordCounts[s] += 1;
-        // }else{
-        //     distinctWordCounts[s] = 1;
-        // }
         distinctWordCounts[s] += 1;
     }
     for(string s: uniqueChars){
@@ -136,7 +133,7 @@ void bpe(vector<string>& allWords, vector<string> &vocab,
 
 }
 
-vector<int> encode(vector<string> allWords, vector<pair<string, string>>& merges, 
+vector<int> encode(vector<string>& allWords, vector<pair<string, string>>& merges, 
     map<string, int>& stoi){
          
     vector<int> encodedTokens;
