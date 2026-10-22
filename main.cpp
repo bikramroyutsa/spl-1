@@ -34,5 +34,5 @@ int main(){
 
     // we encode the files
     vector<int> encodedTokens = encode(allWords, merges, stoi);
-    decode(encodedTokens, itos);
+    // decode(encodedTokens, itos);
 }
