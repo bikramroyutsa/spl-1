@@ -13,6 +13,6 @@ struct BrokenWord {
 };
 
 vector<string> parseIntoWords(string line);
-void bpe(vector<string>& allWords, vector<string>& vocab, vector<pair<string, string>>& merges);
+void bpe(vector<string>& allWords, vector<string>& vocab, vector<pair<string, string>>& merges, int mergeIteration);
 vector<int> encode(vector<string>& allWords, vector<pair<string, string>>& merges, map<string, int>& stoi);
 string decode(const vector<int>& encodedTokens, map<int, string>& itos);

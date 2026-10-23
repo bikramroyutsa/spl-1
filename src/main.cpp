@@ -3,9 +3,10 @@
 #include "parser.h" 
 #include<fstream>
 int main(){
-    ifstream file("input.txt");
+    ifstream file("data/wikitext2.txt");
     if(!file.is_open()){
-        cout << "failed to open file" << endl;
+        cout << "failed to open data/input.txt" << endl;
+        return 1;
     }
     string line;
     vector<string> allWords;
@@ -21,7 +22,7 @@ int main(){
     vector<string> vocab;
     vector<pair<string, string>> merges;
     // building the vocab and merge rules
-    bpe(allWords, vocab, merges);
+    bpe(allWords, vocab, merges, 300);
 
     map<string, int> stoi;
     map<int, string> itos;
@@ -36,11 +37,4 @@ int main(){
     // we encode the files
     vector<int> encodedTokens = encode(allWords, merges, stoi);
     vector<vector<float>> embeddings = matrixBuilder(vocab.size(), encodedTokens);
-    // for(int i = 0; i < embeddings.size(); i++){
-    //     for(int j = 0; j < embeddings[i].size(); j++){
-    //         cout << embeddings[i][j] << " ";
-    //     }
-    //     cout << endl;
-    // }
-    // decode(encodedTokens, itos);
 }

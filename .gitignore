@@ -1,4 +1,6 @@
 # Compiled executables & binaries
+bin/
+main
 *.out
 a.out
 parser
@@ -29,5 +31,12 @@ parser
 
 # Visualizer & Matrix Exports
 visualizer.*
+include/visualizer.*
+src/visualizer.*
 pmi_matrix.csv
 *.csv
+
+# Similarity Analysis
+similarity.*
+include/similarity.*
+src/similarity.*

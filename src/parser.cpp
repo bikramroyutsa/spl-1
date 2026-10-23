@@ -94,7 +94,7 @@ void merge(vector<pair<string, string>>& merges, vector<BrokenWord>& wordsBroken
 
 }
 void bpe(vector<string>& allWords, vector<string> &vocab,
-    vector<pair<string, string>>& merges){
+    vector<pair<string, string>>& merges, int mergeIteration){
 
     unordered_map<string, int> distinctWordCounts;
 
@@ -120,17 +120,10 @@ void bpe(vector<string>& allWords, vector<string> &vocab,
         letters.push_back("$");
         wordsBrokenDown.push_back(BrokenWord(it.first, letters, it.second));
     }
-    for(int i = 0; i < 100; i++){
+    for(int i = 0; i < mergeIteration; i++){
         getPairWiseCounts(wordsBrokenDown, pairWiseCounts);
         merge(merges, wordsBrokenDown, pairWiseCounts, vocab);
     }
-    // for(auto& it: wordsBrokenDown){
-    //     for(string& s: it.letters){
-    //         cout << s << ", ";
-    //     }
-    //     cout << endl;
-    // }
-
 }
 
 vector<int> encode(vector<string>& allWords, vector<pair<string, string>>& merges, 
