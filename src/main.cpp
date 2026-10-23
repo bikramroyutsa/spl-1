@@ -1,28 +1,20 @@
-#include<iostream>
+#include "training.h"
 #include "occurence.h"
 #include "parser.h" 
-#include<fstream>
-int main(){
-    ifstream file("data/wikitext2.txt");
-    if(!file.is_open()){
-        cout << "failed to open data/input.txt" << endl;
-        return 1;
-    }
-    string line;
-    vector<string> allWords;
-    string text;
 
-    // we read the files
-    while(getline(file, line)){
-        text += line;
-        vector<string> parsed = parseIntoWords(line);
-        allWords.insert(allWords.end(), parsed.begin(), parsed.end());
-    }
+int main(){
+    // Load dataset files into allWords
+    vector<string> allWords = loadData({
+        "data/input.txt",
+        "data/shakespeare.txt",
+        "data/wikitext2.txt"
+    });
 
     vector<string> vocab;
     vector<pair<string, string>> merges;
     // building the vocab and merge rules
-    bpe(allWords, vocab, merges, 300);
+    int mergeIteration = 800;
+    bpe(allWords, vocab, merges, mergeIteration);
 
     map<string, int> stoi;
     map<int, string> itos;
@@ -34,7 +26,11 @@ int main(){
         itos[it.second] = it.first;
     }
 
-    // we encode the files
+    // // we encode the files
+    // vector<string> encodeThisWords = loadData(
+    //     {"data/input.txt"}
+    // );
     vector<int> encodedTokens = encode(allWords, merges, stoi);
-    vector<vector<float>> embeddings = matrixBuilder(vocab.size(), encodedTokens);
+    int embeddingSize = 64;
+    vector<vector<float>> embeddings = matrixBuilder(vocab.size(), encodedTokens, embeddingSize);
 }

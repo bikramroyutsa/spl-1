@@ -59,7 +59,7 @@ void pmi(vector<vector<float>>& matrix, vector<int>& tokenCounts, int totaltoken
         }
     }
 }
-vector<vector<float>> matrixBuilder(const int vocabSize, vector<int>& encodedTokens){
+vector<vector<float>> matrixBuilder(const int vocabSize, vector<int>& encodedTokens, int embeddingSize){
     vector<vector<float>> matrix(vocabSize, vector<float>(vocabSize, 0.0f));
     vector<int> tokenCounts(vocabSize, 0);
     int totaltokens = encodedTokens.size();
@@ -80,7 +80,7 @@ vector<vector<float>> matrixBuilder(const int vocabSize, vector<int>& encodedTok
     }
     cout << "original matrix size " << matrix.size() << " X " << matrix.size() << endl; 
     pmi(matrix, tokenCounts, totaltokens, totalPairs);
-    vector<vector<float>> embeddings = computeSVD_Eigen(matrix, 32);
+    vector<vector<float>> embeddings = computeSVD_Eigen(matrix, embeddingSize);
     cout << "svd matrix size " << embeddings.size() << " X " << embeddings[0].size() << endl; 
 
     return embeddings;
