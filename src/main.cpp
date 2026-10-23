@@ -4,11 +4,7 @@
 
 int main(){
     // Load dataset files into allWords
-    vector<string> allWords = loadData({
-        "data/input.txt",
-        "data/shakespeare.txt",
-        "data/wikitext2.txt"
-    });
+    vector<string> allWords = loadDataFromDir("data");
 
     vector<string> vocab;
     vector<pair<string, string>> merges;

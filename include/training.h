@@ -13,3 +13,5 @@ vector<string> loadData(const vector<string>& filepaths);
 
 // Load default training files (e.g. data/wikitext2.txt)
 vector<string> loadDefaultTrainingData();
+vector<string> loadDataFromDir(const string& folderpath,
+    const string& extension = ".txt");

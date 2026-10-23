@@ -2,8 +2,9 @@
 #include "parser.h"
 #include <iostream>
 #include <fstream>
-
+#include<filesystem>
 using namespace std;
+namespace fs = std::filesystem;
 
 void loadFileIntoWords(const string& filepath, vector<string>& allWords) {
     ifstream file(filepath);
@@ -37,4 +38,15 @@ vector<string> loadDefaultTrainingData() {
         "data/wikitext2.txt"
     };
     return loadData(defaultFiles);
+}
+
+vector<string> loadDataFromDir(const string& folderpath,
+    const string& extension ){
+    vector<string> filepaths;
+    for(const auto& entry: fs::directory_iterator(folderpath)){
+        if(entry.is_regular_file() && entry.path().extension() == extension){
+            filepaths.push_back(entry.path().string());
+        }
+    }
+    return loadData(filepaths);
 }
