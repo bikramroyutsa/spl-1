@@ -1,8 +1,44 @@
-#include <map>
-#include "occurence.h"
-#include<algorithm>
-#include <cmath> 
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <Eigen/Dense>
+
 using namespace std;
+
+
+vector<vector<float>> computeSVD_Eigen(const vector<vector<float>>& matrix, int k) {
+    int V = matrix.size();
+    k = min(k, V);
+
+    Eigen::MatrixXf M(V, V);
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            M(i, j) = matrix[i][j];
+        }
+    }
+
+    // 2. Compute SVD: M = U * Sigma * V^T
+    // BDCSVD is Eigen's fastest SVD solver for large/medium matrices
+    Eigen::BDCSVD<Eigen::MatrixXf> svd(M, Eigen::ComputeThinU | Eigen::ComputeThinV);
+
+    Eigen::MatrixXf U = svd.matrixU();
+    Eigen::VectorXf S = svd.singularValues();
+
+    // 3. Construct Word Embeddings: W = U_k * sqrt(Sigma_k)
+    vector<vector<float>> embeddings(V, vector<float>(k, 0.0f));
+    for (int i = 0; i < V; i++) {
+        for (int d = 0; d < k; d++) {
+            embeddings[i][d] = U(i, d) * sqrt(S(d));
+        }
+    }
+
+    cout << "Top 5 Singular Values:\n";
+    for (int d = 0; d < min(5, (int)S.size()); d++) {
+        cout << "  dim " << d + 1 << ": " << S(d) << "\n";
+    }
+
+    return embeddings;
+}
 
 void pmi(vector<vector<float>>& matrix, vector<int>& tokenCounts, int totaltokens,
     int totalPairs){
@@ -42,6 +78,10 @@ vector<vector<float>> matrixBuilder(const int vocabSize, vector<int>& encodedTok
             totalPairs += 2;
         }
     }
+    cout << "original matrix size " << matrix.size() << " X " << matrix.size() << endl; 
     pmi(matrix, tokenCounts, totaltokens, totalPairs);
-    return matrix;
+    vector<vector<float>> embeddings = computeSVD_Eigen(matrix, 32);
+    cout << "svd matrix size " << embeddings.size() << " X " << embeddings[0].size() << endl; 
+
+    return embeddings;
 }

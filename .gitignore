@@ -26,3 +26,8 @@ parser
 ._*
 .Spotlight-V100
 .Trashes
+
+# Visualizer & Matrix Exports
+visualizer.*
+pmi_matrix.csv
+*.csv

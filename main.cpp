@@ -1,4 +1,5 @@
 #include<iostream>
+#include "occurence.h"
 #include "parser.h" 
 #include<fstream>
 int main(){
@@ -34,5 +35,12 @@ int main(){
 
     // we encode the files
     vector<int> encodedTokens = encode(allWords, merges, stoi);
+    vector<vector<float>> embeddings = matrixBuilder(vocab.size(), encodedTokens);
+    // for(int i = 0; i < embeddings.size(); i++){
+    //     for(int j = 0; j < embeddings[i].size(); j++){
+    //         cout << embeddings[i][j] << " ";
+    //     }
+    //     cout << endl;
+    // }
     // decode(encodedTokens, itos);
 }
