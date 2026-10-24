@@ -44,5 +44,5 @@ int main(){
         }
         p.emb = avgEmb;
     }
-
+    cout << "total paragraphs " << paraNodes.size() << endl;
 }
