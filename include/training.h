@@ -9,11 +9,12 @@ struct Pnode {
     string text; 
     vector<float> emb;
     string parentFilePath;
-
+    int cluster;
     Pnode(string text, vector<float> emb, string parentFilePath){
         this->text = text;
         this->emb =emb;
         this->parentFilePath = parentFilePath;
+        this->cluster = 0;
     }
 };
 
