@@ -1,12 +1,22 @@
 #include "training.h"
 #include "parser.h"
+#include <cctype>
 #include <iostream>
 #include <fstream>
 #include<filesystem>
 using namespace std;
 namespace fs = std::filesystem;
 
-void loadFileIntoWords(const string& filepath, vector<string>& allWords) {
+
+bool isBlankLine(const string& str) {
+    for(unsigned char ch: str){
+        if(!isspace(ch)){
+            return false;
+        }
+    }
+    return true;
+}
+void loadFile(const string& filepath, vector<string>& allWords, vector<Pnode>& paraNodes) {
     ifstream file(filepath);
     if (!file.is_open()) {
         cerr << "[Error] Failed to open file: " << filepath << endl;
@@ -16,22 +26,39 @@ void loadFileIntoWords(const string& filepath, vector<string>& allWords) {
     cout << "Loading " << filepath << "..." << endl;
     string line;
     int lineCount = 0;
+    string currPara;
+
     while (getline(file, line)) {
         vector<string> parsed = parseIntoWords(line);
+
+        if(isBlankLine(line)){
+            if(!currPara.empty()){
+                paraNodes.push_back(Pnode(currPara, {}, filepath));
+            }
+            currPara.clear();
+        }else{
+            if (!currPara.empty()) {
+                currPara += " "; 
+            }
+            currPara += line;
+        }
+
         allWords.insert(allWords.end(), parsed.begin(), parsed.end());
         lineCount++;
     }
+    if (!currPara.empty()) {
+        paraNodes.push_back(Pnode(currPara, {}, filepath));
+    }
+
     cout << "  Finished " << filepath << " (" << lineCount << " lines loaded)" << endl;
 }
 
-vector<string> loadData(const vector<string>& filepaths) {
-    vector<string> allWords;
-    for (const string& path : filepaths) {
-        loadFileIntoWords(path, allWords);
-    }
-    cout << "Total training words loaded: " << allWords.size() << endl;
-    return allWords;
-}
+// vector<string> loadData(const vector<string>& filepaths, vector<string>& allWords, vector<Pnode>& paraNodes) {
+//     for (const string& path : filepaths) {
+//         loadFile(path, allWords, paraNodes);
+//     }
+//     cout << "Total training words loaded: " << allWords.size() << endl;
+// }
 
 vector<string> loadDefaultTrainingData() {
     vector<string> defaultFiles = {
@@ -40,13 +67,17 @@ vector<string> loadDefaultTrainingData() {
     return loadData(defaultFiles);
 }
 
-vector<string> loadDataFromDir(const string& folderpath,
-    const string& extension ){
+void loadDataFromDir(const string& folderpath,
+    const string& extension,vector<string>& allWords, vector<Pnode>& paraNodes){
     vector<string> filepaths;
     for(const auto& entry: fs::directory_iterator(folderpath)){
         if(entry.is_regular_file() && entry.path().extension() == extension){
             filepaths.push_back(entry.path().string());
         }
     }
-    return loadData(filepaths);
+    ;
+    for (const string& path : filepaths) {
+        loadFile(path, allWords, paraNodes);
+    }
+    cout << "Total training words loaded: " << allWords.size() << endl;
 }

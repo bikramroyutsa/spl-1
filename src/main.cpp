@@ -3,18 +3,17 @@
 #include "parser.h" 
 
 int main(){
-    // Load dataset files into allWords
-    vector<string> allWords = loadDataFromDir("data");
+    vector<string> allWords;
+    vector<Pnode> paraNodes;
+    loadDataFromDir("data", ".txt", allWords, paraNodes);
 
     vector<string> vocab;
     vector<pair<string, string>> merges;
-    // building the vocab and merge rules
     int mergeIteration = 800;
     bpe(allWords, vocab, merges, mergeIteration);
 
     map<string, int> stoi;
     map<int, string> itos;
-
     for(int i = 0; i < vocab.size(); i++){
         stoi[vocab[i]] = i;
     }
@@ -22,10 +21,6 @@ int main(){
         itos[it.second] = it.first;
     }
 
-    // // we encode the files
-    // vector<string> encodeThisWords = loadData(
-    //     {"data/input.txt"}
-    // );
     vector<int> encodedTokens = encode(allWords, merges, stoi);
     int embeddingSize = 64;
     vector<vector<float>> embeddings = matrixBuilder(vocab.size(), encodedTokens, embeddingSize);
