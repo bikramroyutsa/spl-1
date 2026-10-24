@@ -60,12 +60,12 @@ void loadFile(const string& filepath, vector<string>& allWords, vector<Pnode>& p
 //     cout << "Total training words loaded: " << allWords.size() << endl;
 // }
 
-vector<string> loadDefaultTrainingData() {
-    vector<string> defaultFiles = {
-        "data/wikitext2.txt"
-    };
-    return loadData(defaultFiles);
-}
+// vector<string> loadDefaultTrainingData() {
+//     vector<string> defaultFiles = {
+//         "data/wikitext2.txt"
+//     };
+//     return loadData(defaultFiles);
+// }
 
 void loadDataFromDir(const string& folderpath,
     const string& extension,vector<string>& allWords, vector<Pnode>& paraNodes){
