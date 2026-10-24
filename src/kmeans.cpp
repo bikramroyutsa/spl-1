@@ -48,27 +48,7 @@ vector<vector<float>> assignCenteroids(int k, vector<Pnode>& paraNodes){
     }
     return centeroids;
 }
-void runKmeans(int k, vector<Pnode>& paraNodes){
-    
-    vector<vector<float>> centeroids = assignCenteroids(k, paraNodes);
-
-    for(auto& p: paraNodes){
-        vector<float> similarityScores;
-        for(auto& c: centeroids){
-            similarityScores.push_back(cosineSimilarity(p.emb, c));
-        }
-
-        float maxScore = similarityScores[0];
-        int maxIndex = 0;
-        for(int i = 0; i < similarityScores.size(); i++){
-            if(similarityScores[i] > maxScore){
-                maxIndex = i;
-                maxScore = similarityScores[i];
-            }
-        }
-
-        p.cluster = maxIndex;
-    }
+vector<vector<float>> updateCenteroids(int k, vector<Pnode>& paraNodes){
     vector<vector<float>> clusterAvgs(k, vector<float>(paraNodes[0].emb.size(), 0.0f));
     vector<int> clusterCounts(k, 0);
     for(auto& p: paraNodes){
@@ -85,4 +65,31 @@ void runKmeans(int k, vector<Pnode>& paraNodes){
             clusterAvgs[i][d] /= clusterCounts[i];
         }
     }
+    return clusterAvgs;
+}
+void assignNodesToCluster(vector<Pnode>& paraNodes, 
+        vector<vector<float>>& centeroids){
+
+    for(auto& p: paraNodes){
+        vector<float> similarityScores;
+        for(auto& c: centeroids){
+            similarityScores.push_back(cosineSimilarity(p.emb, c));
+        }
+        float maxScore = similarityScores[0];
+        int maxIndex = 0;
+        for(int i = 0; i < similarityScores.size(); i++){
+            if(similarityScores[i] > maxScore){
+                maxIndex = i;
+                maxScore = similarityScores[i];
+            }
+        }
+
+        p.cluster = maxIndex;
+    }
+}
+void runKmeans(int k, vector<Pnode>& paraNodes){
+    vector<vector<float>> centeroids = assignCenteroids(k, paraNodes);
+    assignNodesToCluster(paraNodes , centeroids);
+    centeroids = updateCenteroids(k, paraNodes);
+
 }
