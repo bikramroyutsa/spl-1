@@ -172,3 +172,21 @@ string decode(const vector<int>& encodedTokens, map<int, string>& itos) {
     // cout << text;
     return text;
 }
+
+vector<float> embedText(string text, vector<pair<string, string>>& merges, map<string, int>& stoi, vector<vector<float>>& embeddings, int embeddingSize){
+    vector<string> words = parseIntoWords(text);
+    vector<int> tokens = encode(words, merges, stoi);
+    vector<float> avgEmb(embeddingSize, 0.0f);
+    if(tokens.empty()){
+        return avgEmb;
+    }
+    for (int token : tokens) {
+        for (int d = 0; d < embeddingSize; d++) {
+            avgEmb[d] += embeddings[token][d];
+        }
+    }
+    for (int d = 0; d < embeddingSize; d++) {
+        avgEmb[d] /= tokens.size();
+    }
+    return avgEmb;
+}

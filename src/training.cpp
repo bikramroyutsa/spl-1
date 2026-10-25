@@ -81,3 +81,9 @@ void loadDataFromDir(const string& folderpath,
     }
     cout << "Total training words loaded: " << allWords.size() << endl;
 }
+
+void embedParagraphs(vector<Pnode>& paraNodes, vector<pair<string, string>>& merges, map<string, int>& stoi, vector<vector<float>>& embeddings, int embeddingSize){
+    for(Pnode& p: paraNodes){
+        p.emb = embedText(p.text, merges, stoi, embeddings, embeddingSize);
+    }
+}

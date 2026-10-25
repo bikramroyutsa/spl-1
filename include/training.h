@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -25,3 +26,5 @@ vector<string> loadData(const vector<string>& filepaths);
 vector<string> loadDefaultTrainingData();
 void loadDataFromDir(const string& folderpath,
     const string& extension, vector<string>& allWords, vector<Pnode>& paraNodes);
+
+void embedParagraphs(vector<Pnode>& paraNodes, vector<pair<string, string>>& merges, map<string, int>& stoi, vector<vector<float>>& embeddings, int embeddingSize);
