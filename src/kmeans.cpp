@@ -88,11 +88,56 @@ void assignNodesToCluster(vector<Pnode>& paraNodes,
         p.cluster = maxIndex;
     }
 }
-void runKmeans(int k, vector<Pnode>& paraNodes, int maxIterations){
-    vector<vector<float>> centeroids = assignCenteroids(k, paraNodes);
+float runKmeans(int k, vector<Pnode>& paraNodes, vector<vector<float>>& centeroids,  int maxIterations){
+    centeroids = assignCenteroids(k, paraNodes);
     for(int i = 0; i < maxIterations; i++){
         assignNodesToCluster(paraNodes , centeroids);
         centeroids = updateCenteroids(k, paraNodes);
     }
+    float error = 0.0f;
+    for(auto& p : paraNodes){
+        error += 1.0f - cosineSimilarity(p.emb, centeroids[p.cluster]);
+    }
+    return error;
+}
 
+int findOptimalK(vector<Pnode>& paraNodes, int maxK, int maxIterations){
+    int n = paraNodes.size();
+    if(maxK > n){
+        maxK = n;
+    }
+    if(maxK <= 2){
+        return maxK;
+    }
+
+    vector<float> errors;
+    for(int k = 1; k <= maxK; k++){
+        vector<Pnode> tempNodes = paraNodes;
+        vector<vector<float>> tempCenteroids;
+        float err = runKmeans(k, tempNodes, tempCenteroids, maxIterations);
+        errors.push_back(err);
+    }
+
+    float x1 = 1.0f;
+    float y1 = errors[0];
+    float x2 = maxK;
+    float y2 = errors[maxK - 1];
+
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+
+    float maxDist = -1.0f;
+    int bestK = 2;
+
+    for(int i = 0; i < maxK; i++){
+        float x = i + 1;
+        float y = errors[i];
+        float dist = fabs(dy * x - dx * y + x2 * y1 - y2 * x1);
+        if(dist > maxDist){
+            maxDist = dist;
+            bestK = i + 1;
+        }
+    }
+
+    return bestK;
 }

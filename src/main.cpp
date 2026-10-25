@@ -47,9 +47,12 @@ int main(){
     }
     cout << "total paragraphs " << paraNodes.size() << endl;
 
-    int k = 3;
-    cout << "kmeans with k = " << k << "..." << endl;
-    runKmeans(k, paraNodes);
+    int k = findOptimalK(paraNodes, 15);
+    cout << "optimal k = " << k << endl;
+    cout << "kmeans with k = " << k << "..." << endl;\
+
+    vector<vector<float>> centeroids;
+    runKmeans(k, paraNodes, centeroids, 30);
     vector<int> counts(k, 0);
 
     for(const auto& p : paraNodes){

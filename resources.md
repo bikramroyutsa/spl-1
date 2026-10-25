@@ -6,3 +6,5 @@ https://huggingface.co/learn/llm-course/en/chapter6/5
 
 
 Kmeans
+https://youtu.be/3RAEwPiZkkw?si=pGMHZl7xau34Tf3H
+https://youtu.be/n2FkCVxXIT4?si=s0EQCgr4KPolR23J
