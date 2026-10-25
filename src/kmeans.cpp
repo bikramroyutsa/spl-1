@@ -1,3 +1,4 @@
+#include "kmeans.h"
 #include "training.h"
 #include <cmath>
 #include <random>
@@ -87,9 +88,11 @@ void assignNodesToCluster(vector<Pnode>& paraNodes,
         p.cluster = maxIndex;
     }
 }
-void runKmeans(int k, vector<Pnode>& paraNodes){
+void runKmeans(int k, vector<Pnode>& paraNodes, int maxIterations){
     vector<vector<float>> centeroids = assignCenteroids(k, paraNodes);
-    assignNodesToCluster(paraNodes , centeroids);
-    centeroids = updateCenteroids(k, paraNodes);
+    for(int i = 0; i < maxIterations; i++){
+        assignNodesToCluster(paraNodes , centeroids);
+        centeroids = updateCenteroids(k, paraNodes);
+    }
 
 }
