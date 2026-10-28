@@ -16,7 +16,7 @@ bool isBlankLine(const string& str) {
     }
     return true;
 }
-void loadFile(const string& filepath, vector<string>& allWords, vector<Pnode>& paraNodes) {
+void loadTrainingFile(const string& filepath, vector<string>& allWords) {
     ifstream file(filepath);
     if (!file.is_open()) {
         cerr << "[Error] Failed to open file: " << filepath << endl;
@@ -26,60 +26,69 @@ void loadFile(const string& filepath, vector<string>& allWords, vector<Pnode>& p
     cout << "Loading " << filepath << "..." << endl;
     string line;
     int lineCount = 0;
-    string currPara;
 
     while (getline(file, line)) {
         vector<string> parsed = parseIntoWords(line);
+        allWords.insert(allWords.end(), parsed.begin(), parsed.end());
+        lineCount++;
+    }
 
+    cout << "  Finished " << filepath << " (" << lineCount << " lines loaded)" << endl;
+}
+
+void loadSearchFile(const string& filepath, vector<Pnode>& paraNodes) {
+    ifstream file(filepath);
+    if (!file.is_open()) {
+        cerr << "[Error] Failed to open file: " << filepath << endl;
+        return;
+    }
+
+    string line;
+    string currPara;
+
+    while (getline(file, line)) {
         if(isBlankLine(line)){
             if(!currPara.empty()){
                 paraNodes.push_back(Pnode(currPara, {}, filepath));
+                currPara.clear();
             }
-            currPara.clear();
         }else{
             if (!currPara.empty()) {
                 currPara += " "; 
             }
             currPara += line;
         }
-
-        allWords.insert(allWords.end(), parsed.begin(), parsed.end());
-        lineCount++;
     }
     if (!currPara.empty()) {
         paraNodes.push_back(Pnode(currPara, {}, filepath));
     }
-
-    cout << "  Finished " << filepath << " (" << lineCount << " lines loaded)" << endl;
 }
 
-// vector<string> loadData(const vector<string>& filepaths, vector<string>& allWords, vector<Pnode>& paraNodes) {
-//     for (const string& path : filepaths) {
-//         loadFile(path, allWords, paraNodes);
-//     }
-//     cout << "Total training words loaded: " << allWords.size() << endl;
-// }
-
-// vector<string> loadDefaultTrainingData() {
-//     vector<string> defaultFiles = {
-//         "data/wikitext2.txt"
-//     };
-//     return loadData(defaultFiles);
-// }
-
-void loadDataFromDir(const string& folderpath,
-    const string& extension,vector<string>& allWords, vector<Pnode>& paraNodes){
+void loadTrainingData(const string& folderpath,
+    const string& extension, vector<string>& allWords){
     vector<string> filepaths;
     for(const auto& entry: fs::directory_iterator(folderpath)){
         if(entry.is_regular_file() && entry.path().extension() == extension){
             filepaths.push_back(entry.path().string());
         }
     }
-    ;
     for (const string& path : filepaths) {
-        loadFile(path, allWords, paraNodes);
+        loadTrainingFile(path, allWords);
     }
     cout << "Total training words loaded: " << allWords.size() << endl;
+}
+
+void loadSearchData(const string& folderpath,
+    const string& extension, vector<Pnode>& paraNodes){
+    vector<string> filepaths;
+    for(const auto& entry: fs::directory_iterator(folderpath)){
+        if(entry.is_regular_file() && entry.path().extension() == extension){
+            filepaths.push_back(entry.path().string());
+        }
+    }
+    for (const string& path : filepaths) {
+        loadSearchFile(path, paraNodes);
+    }
 }
 
 void embedParagraphs(vector<Pnode>& paraNodes, vector<pair<string, string>>& merges, map<string, int>& stoi, vector<vector<float>>& embeddings, int embeddingSize){

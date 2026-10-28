@@ -32,10 +32,10 @@ vector<vector<float>> computeSVD_Eigen(const vector<vector<float>>& matrix, int 
         }
     }
 
-    cout << "Top 5 Singular Values:\n";
-    for (int d = 0; d < min(5, (int)S.size()); d++) {
-        cout << "  dim " << d + 1 << ": " << S(d) << "\n";
-    }
+    // cout << "Top 5 Singular Values:\n";
+    // for (int d = 0; d < min(5, (int)S.size()); d++) {
+    //     cout << "  dim " << d + 1 << ": " << S(d) << "\n";
+    // }
 
     return embeddings;
 }

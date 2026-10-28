@@ -14,7 +14,7 @@ void trainAndEmbed(vector<Pnode>& paraNodes, vector<pair<string, string>>& merge
     int mergeIteration = 800;
     vector<int> encodedTokens;
 
-    loadDataFromDir("data", ".txt", allWords, paraNodes); // data is loaded for allwords and paragraph nodes are created without embeddings
+    loadTrainingData("training", ".txt", allWords);
     bpe(allWords, vocab, merges, mergeIteration); // this build the vocabulary and merge rules
     for(int i = 0; i < vocab.size(); i++){
         stoi[vocab[i]] = i;
@@ -22,11 +22,11 @@ void trainAndEmbed(vector<Pnode>& paraNodes, vector<pair<string, string>>& merge
     for(auto& it: stoi){
         itos[it.second] = it.first;
     }
-
     encodedTokens = encode(allWords, merges, stoi); // directory texts are encoded
-    
     embeddings = matrixBuilder(vocab.size(), encodedTokens, embeddingSize); // embeddings are generated
 
+    loadSearchData("search", ".txt", paraNodes);
+    
     embedParagraphs(paraNodes, merges, stoi, embeddings, embeddingSize); // embeddings for paragraph nodes are generated
     cout << "total paragraphs " << paraNodes.size() << endl;
 }
