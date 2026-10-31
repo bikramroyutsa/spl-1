@@ -2,6 +2,7 @@
 #include "occurence.h"
 #include "parser.h" 
 #include "kmeans.h"
+#include "saves.h"
 #include<iostream>
 using namespace std;
 
@@ -49,12 +50,15 @@ void cluster(int& clusterSize, vector<Pnode>& paraNodes, vector<vector<float>>& 
 int main(){
     int clusterSize;
     int embeddingSize = 64;
-    vector<Pnode> paraNodes;
+    vector<vector<float>> embeddings;
     vector<pair<string, string>> merges;
     map<string, int> stoi;
-    vector<vector<float>> embeddings;
+
+    vector<Pnode> paraNodes;
     vector<vector<float>> centeroids;
 
     trainAndEmbed(paraNodes, merges, stoi, embeddings, embeddingSize);
     cluster(clusterSize, paraNodes, centeroids);
+
+    saveModel("model.bin", clusterSize, embeddingSize, embeddings, merges, stoi, paraNodes, centeroids);
 }
