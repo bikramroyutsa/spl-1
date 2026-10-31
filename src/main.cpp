@@ -57,8 +57,13 @@ int main(){
     vector<Pnode> paraNodes;
     vector<vector<float>> centeroids;
 
-    trainAndEmbed(paraNodes, merges, stoi, embeddings, embeddingSize);
-    cluster(clusterSize, paraNodes, centeroids);
+    string modelFile = "model.bin";
 
-    saveModel("model.bin", clusterSize, embeddingSize, embeddings, merges, stoi, paraNodes, centeroids);
+    if(!loadModel(modelFile, clusterSize, embeddingSize, embeddings, merges, stoi, paraNodes, centeroids)){
+        trainAndEmbed(paraNodes, merges, stoi, embeddings, embeddingSize);
+        cluster(clusterSize, paraNodes, centeroids);
+        saveModel(modelFile, clusterSize, embeddingSize, embeddings, merges, stoi, paraNodes, centeroids);
+    }else{
+        cout << "model loaded from " << modelFile << " (" << paraNodes.size() << " paragraphs, " << clusterSize << " clusters)" << endl;
+    }
 }
