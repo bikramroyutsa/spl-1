@@ -12,7 +12,7 @@ void trainAndEmbed(vector<Pnode>& paraNodes, vector<pair<string, string>>& merge
     vector<string> allWords;
     vector<string> vocab;
     map<int, string> itos;
-    int mergeIteration = 800;
+    int mergeIteration = 2000;
     vector<int> encodedTokens;
 
     loadTrainingData("training", ".txt", allWords);
@@ -65,5 +65,23 @@ int main(){
         saveModel(modelFile, clusterSize, embeddingSize, embeddings, merges, stoi, paraNodes, centeroids);
     }else{
         cout << "model loaded from " << modelFile << " (" << paraNodes.size() << " paragraphs, " << clusterSize << " clusters)" << endl;
+    }
+    bool loop = true;
+    while(loop){
+        cout << "Enter your query: " << endl;
+        cout << "=> ";
+        string s;
+        getline(cin, s);
+        vector<float> query = embedText(s, merges, stoi, embeddings, embeddingSize);
+        float similarityScore = -1;
+        Pnode matchedP;
+        for(Pnode& p: paraNodes){
+            float sim =  cosineSimilarity(query, p.emb);
+            if(sim > similarityScore){
+                matchedP = p;
+                similarityScore = sim;
+            }
+        }
+        cout << matchedP.text << endl;
     }
 }

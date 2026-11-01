@@ -17,6 +17,12 @@ struct Pnode {
         this->parentFilePath = parentFilePath;
         this->cluster = 0;
     }
+    Pnode(){
+        text = "";
+        emb = {};
+        parentFilePath = "";
+        cluster = 0;
+    }
 };
 
 void loadFileIntoWords(const string& filepath, vector<string>& allWords);
