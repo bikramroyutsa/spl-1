@@ -32,6 +32,23 @@ vector<vector<float>> computeSVD_Eigen(const vector<vector<float>>& matrix, int 
         }
     }
 
+    // mean Normalization
+    vector<float> meanVector(k, 0.0f);
+    for (int i = 0; i < V; i++) {
+        for (int d = 0; d < k; d++) {
+            meanVector[d] += embeddings[i][d];
+        }
+    }
+    for (int d = 0; d < k; d++) {
+        meanVector[d] /= V;
+    }
+
+    for (int i = 0; i < V; i++) {
+        for (int d = 0; d < k; d++) {
+            embeddings[i][d] -= meanVector[d];
+        }
+    }
+
     // cout << "Top 5 Singular Values:\n";
     // for (int d = 0; d < min(5, (int)S.size()); d++) {
     //     cout << "  dim " << d + 1 << ": " << S(d) << "\n";
