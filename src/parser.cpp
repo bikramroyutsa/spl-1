@@ -47,12 +47,7 @@ void getPairWiseCounts(vector<BrokenWord>& wordsBrokenDown, map<pair<string, str
         int len = bw.letters.size();
         for(int i = 0; i < len - 1; i++){
             pair<string, string> currPair = {bw.letters[i], bw.letters[i+1]};
-            auto it = pairWiseCounts.find(currPair);
-            if(it != pairWiseCounts.end()){
-                pairWiseCounts[currPair] += bw.count;
-            }else{
-                pairWiseCounts[currPair] = bw.count;
-            }
+            pairWiseCounts[currPair] += bw.count;
         }
     }
 }

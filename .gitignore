@@ -40,3 +40,7 @@ pmi_matrix.csv
 similarity.*
 include/similarity.*
 src/similarity.*
+
+scripts
+docs
+data_archive
