@@ -37,7 +37,8 @@ void saveModel(const string& filepath, int clusterSize, int embeddingSize,
     vector<pair<string, string>>& merges, 
     map<string, int>& stoi, 
     vector<Pnode>& paraNodes,
-    vector<vector<float>>& centeroids){
+    vector<vector<float>>& centeroids,
+    vector<float>& tokenWeights){
     
     ofstream outputFile(filepath, ios::binary);
     if(!outputFile.is_open()){
@@ -83,6 +84,7 @@ void saveModel(const string& filepath, int clusterSize, int embeddingSize,
         writeFloatVector(outputFile, row);
     }
 
+    writeFloatVector(outputFile, tokenWeights);
 }
 
 bool loadModel(const string& filepath, int& clusterSize, int& embeddingSize,
@@ -90,7 +92,8 @@ bool loadModel(const string& filepath, int& clusterSize, int& embeddingSize,
     vector<pair<string, string>>& merges, 
     map<string, int>& stoi, 
     vector<Pnode>& paraNodes,
-    vector<vector<float>>& centeroids){
+    vector<vector<float>>& centeroids,
+    vector<float>& tokenWeights){
 
     ifstream inputFile(filepath, ios::binary);
     if(!inputFile.is_open()){
@@ -147,6 +150,8 @@ bool loadModel(const string& filepath, int& clusterSize, int& embeddingSize,
     for (int i = 0; i < numCenteroids; i++) {
         centeroids[i] = readFloatVector(inputFile);
     }
+
+    tokenWeights = readFloatVector(inputFile);
 
     return true;
 }

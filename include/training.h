@@ -35,4 +35,4 @@ void loadTrainingData(const string& folderpath,
 void loadSearchData(const string& folderpath,
     const string& extension, vector<Pnode>& paraNodes);
 
-void embedParagraphs(vector<Pnode>& paraNodes, vector<pair<string, string>>& merges, map<string, int>& stoi, vector<vector<float>>& embeddings, int embeddingSize);
+void embedParagraphs(vector<Pnode>& paraNodes, vector<pair<string, string>>& merges, map<string, int>& stoi, vector<vector<float>>& embeddings, int embeddingSize, const vector<float>& tokenWeights = {});

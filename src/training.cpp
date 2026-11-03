@@ -92,8 +92,8 @@ void loadSearchData(const string& folderpath,
 }
 
 void embedParagraphs(vector<Pnode>& paraNodes, vector<pair<string, string>>& merges, 
-    map<string, int>& stoi, vector<vector<float>>& embeddings, int embeddingSize){
+    map<string, int>& stoi, vector<vector<float>>& embeddings, int embeddingSize, const vector<float>& tokenWeights){
     for(Pnode& p: paraNodes){
-        p.emb = embedText(p.text, merges, stoi, embeddings, embeddingSize);
+        p.emb = embedText(p.text, merges, stoi, embeddings, embeddingSize, tokenWeights);
     }
 }
