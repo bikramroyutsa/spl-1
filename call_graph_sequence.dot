@@ -1,0 +1,275 @@
+digraph SemanticSearchCallGraph {
+    // Global Graph Attributes
+    graph [
+        rankdir = TB,
+        splines = true,
+        nodesep = 0.6,
+        ranksep = 0.8,
+        fontname = "Helvetica-Bold",
+        fontsize = 14,
+        label = "SPL-1 Semantic Search Engine: Sequential Call Graph",
+        labelloc = t,
+        compound = true
+    ];
+
+    node [
+        fontname = "Helvetica",
+        fontsize = 10,
+        shape = box,
+        style = "rounded,filled",
+        penwidth = 1.2
+    ];
+
+    edge [
+        fontname = "Helvetica-Bold",
+        fontsize = 9,
+        penwidth = 1.4,
+        arrowsize = 0.8
+    ];
+
+    // ==========================================
+    // NODE DEFINITIONS BY MODULE / SUBSYSTEM
+    // ==========================================
+
+    subgraph cluster_main {
+        label = "Driver (src/main.cpp)";
+        style = "filled,rounded";
+        fillcolor = "#F0F4F8";
+        color = "#1E3A8A";
+        penwidth = 1.5;
+
+        main          [label="main()\n[Entry Point]", fillcolor="#93C5FD", shape=doubleoctagon];
+        trainAndEmbed [label="trainAndEmbed()\n[Training Coordinator]", fillcolor="#BFDBFE"];
+        cluster       [label="cluster()\n[Clustering Coordinator]", fillcolor="#BFDBFE"];
+    }
+
+    subgraph cluster_saves {
+        label = "Model Persistence (src/saves.cpp)";
+        style = "filled,rounded";
+        fillcolor = "#FAF5FF";
+        color = "#6B21A8";
+
+        loadModel       [label="loadModel()", fillcolor="#E9D5FF"];
+        saveModel       [label="saveModel()", fillcolor="#E9D5FF"];
+        readString      [label="readString()", fillcolor="#F3E8FF"];
+        readFloatVector [label="readFloatVector()", fillcolor="#F3E8FF"];
+        writeString     [label="writeString()", fillcolor="#F3E8FF"];
+        writeFloatVector[label="writeFloatVector()", fillcolor="#F3E8FF"];
+    }
+
+    subgraph cluster_training {
+        label = "Data Loading (src/training.cpp)";
+        style = "filled,rounded";
+        fillcolor = "#F0FDF4";
+        color = "#166534";
+
+        loadTrainingData [label="loadTrainingData()", fillcolor="#BBF7D0"];
+        loadTrainingFile [label="loadTrainingFile()", fillcolor="#DCFCE7"];
+        loadSearchData   [label="loadSearchData()", fillcolor="#BBF7D0"];
+        loadSearchFile   [label="loadSearchFile()", fillcolor="#DCFCE7"];
+        isBlankLine      [label="isBlankLine()", fillcolor="#F0FDF4"];
+        embedParagraphs  [label="embedParagraphs()", fillcolor="#BBF7D0"];
+    }
+
+    subgraph cluster_parser {
+        label = "Tokenization & BPE (src/parser.cpp)";
+        style = "filled,rounded";
+        fillcolor = "#FFFBEB";
+        color = "#B45309";
+
+        parseIntoWords     [label="parseIntoWords()", fillcolor="#FDE68A"];
+        to_lowercase       [label="to_lowercase()", fillcolor="#FEF3C7"];
+        bpe                [label="bpe()", fillcolor="#FCD34D"];
+        getPairWiseCounts  [label="getPairWiseCounts()", fillcolor="#FEF3C7"];
+        merge              [label="merge()", fillcolor="#FEF3C7"];
+        encode             [label="encode()", fillcolor="#FDE68A"];
+        embedText          [label="embedText()", fillcolor="#F59E0B", fontcolor=white];
+    }
+
+    subgraph cluster_occurence {
+        label = "Co-occurrence & Embeddings (src/occurence.cpp)";
+        style = "filled,rounded";
+        fillcolor = "#FFF1F2";
+        color = "#9F1239";
+
+        matrixBuilder    [label="matrixBuilder()", fillcolor="#FECDD3"];
+        pmi              [label="pmi()", fillcolor="#FFE4E6"];
+        computeSVD_Eigen [label="computeSVD_Eigen()\n[Mean Centered]", fillcolor="#FB7185", fontcolor=white];
+    }
+
+    subgraph cluster_kmeans {
+        label = "Clustering & Similarity (src/kmeans.cpp)";
+        style = "filled,rounded";
+        fillcolor = "#EEF2FF";
+        color = "#3730A3";
+
+        findOptimalK         [label="findOptimalK()", fillcolor="#C7D2FE"];
+        runKmeans            [label="runKmeans()", fillcolor="#C7D2FE"];
+        assignCenteroids     [label="assignCenteroids()", fillcolor="#E0E7FF"];
+        assignNodesToCluster [label="assignNodesToCluster()", fillcolor="#E0E7FF"];
+        updateCenteroids     [label="updateCenteroids()", fillcolor="#E0E7FF"];
+        cosineSimilarity     [label="cosineSimilarity()", fillcolor="#818CF8", fontcolor=white];
+    }
+
+    // ==========================================
+    // SEQUENTIAL CHRONOLOGICAL CALL EDGES
+    // ==========================================
+
+    // --- PHASE 1: Startup & Cache Check ---
+    main -> loadModel [
+        label = "1. Try load cached model.bin",
+        color = "#6B21A8", fontcolor = "#6B21A8"
+    ];
+    loadModel -> readString [
+        label = "1.1 read vocab & paths",
+        color = "#9333EA", fontcolor = "#9333EA", style=dashed
+    ];
+    loadModel -> readFloatVector [
+        label = "1.2 read vectors & weights",
+        color = "#9333EA", fontcolor = "#9333EA", style=dashed
+    ];
+
+    // --- PHASE 2: Corpus Training (If Cache Miss) ---
+    main -> trainAndEmbed [
+        label = "2. If cache miss: train",
+        color = "#1D4ED8", fontcolor = "#1D4ED8"
+    ];
+
+    trainAndEmbed -> loadTrainingData [
+        label = "2.1 Load training files",
+        color = "#15803D", fontcolor = "#15803D"
+    ];
+    loadTrainingData -> loadTrainingFile [
+        label = "2.1.1 Iterate files",
+        color = "#16A34A", fontcolor = "#16A34A"
+    ];
+    loadTrainingFile -> parseIntoWords [
+        label = "2.1.2 Tokenize lines",
+        color = "#D97706", fontcolor = "#D97706"
+    ];
+    parseIntoWords -> to_lowercase [
+        label = "2.1.3 Normalize case",
+        color = "#B45309", fontcolor = "#B45309"
+    ];
+
+    trainAndEmbed -> bpe [
+        label = "2.2 Learn BPE merges",
+        color = "#D97706", fontcolor = "#D97706"
+    ];
+    bpe -> getPairWiseCounts [
+        label = "2.2.1 Count adjacent pairs",
+        color = "#B45309", fontcolor = "#B45309"
+    ];
+    bpe -> merge [
+        label = "2.2.2 Merge frequent pair",
+        color = "#B45309", fontcolor = "#B45309"
+    ];
+
+    trainAndEmbed -> encode [
+        label = "2.3 Encode training corpus",
+        color = "#D97706", fontcolor = "#D97706"
+    ];
+
+    trainAndEmbed -> matrixBuilder [
+        label = "2.4 Build word embeddings",
+        color = "#BE123C", fontcolor = "#BE123C"
+    ];
+    matrixBuilder -> pmi [
+        label = "2.4.1 Calculate Positive PMI",
+        color = "#E11D48", fontcolor = "#E11D48"
+    ];
+    matrixBuilder -> computeSVD_Eigen [
+        label = "2.4.2 SVD + Mean Subtraction",
+        color = "#E11D48", fontcolor = "#E11D48"
+    ];
+
+    // --- PHASE 3: Search Corpus Indexing & IDF ---
+    trainAndEmbed -> loadSearchData [
+        label = "2.5 Load search paragraphs",
+        color = "#15803D", fontcolor = "#15803D"
+    ];
+    loadSearchData -> loadSearchFile [
+        label = "2.5.1 Split on blank lines",
+        color = "#16A34A", fontcolor = "#16A34A"
+    ];
+    loadSearchFile -> isBlankLine [
+        label = "2.5.2 Check whitespace",
+        color = "#16A34A", fontcolor = "#16A34A"
+    ];
+
+    trainAndEmbed -> embedParagraphs [
+        label = "2.6 Embed paragraphs with IDF",
+        color = "#15803D", fontcolor = "#15803D"
+    ];
+    embedParagraphs -> embedText [
+        label = "2.6.1 Compute weighted average",
+        color = "#D97706", fontcolor = "#D97706"
+    ];
+    embedText -> parseIntoWords [
+        label = "2.6.2 Split text",
+        color = "#B45309", fontcolor = "#B45309"
+    ];
+    embedText -> encode [
+        label = "2.6.3 Encode tokens",
+        color = "#B45309", fontcolor = "#B45309"
+    ];
+
+    // --- PHASE 4: Paragraph Clustering ---
+    main -> cluster [
+        label = "3. Cluster paragraphs",
+        color = "#1D4ED8", fontcolor = "#1D4ED8"
+    ];
+    cluster -> findOptimalK [
+        label = "3.1 Find optimal K (Elbow)",
+        color = "#4338CA", fontcolor = "#4338CA"
+    ];
+    findOptimalK -> runKmeans [
+        label = "3.1.1 Test k=1..15",
+        color = "#4F46E5", fontcolor = "#4F46E5"
+    ];
+    cluster -> runKmeans [
+        label = "3.2 Final K-Means run",
+        color = "#4338CA", fontcolor = "#4338CA"
+    ];
+
+    runKmeans -> assignCenteroids [
+        label = "Init centroids",
+        color = "#6366F1", fontcolor = "#6366F1"
+    ];
+    runKmeans -> assignNodesToCluster [
+        label = "Assign clusters",
+        color = "#6366F1", fontcolor = "#6366F1"
+    ];
+    assignNodesToCluster -> cosineSimilarity [
+        label = "Cosine metric",
+        color = "#6366F1", fontcolor = "#6366F1"
+    ];
+    runKmeans -> updateCenteroids [
+        label = "Recalculate means",
+        color = "#6366F1", fontcolor = "#6366F1"
+    ];
+
+    // --- PHASE 5: Save Model to Disk ---
+    main -> saveModel [
+        label = "4. Save model.bin",
+        color = "#6B21A8", fontcolor = "#6B21A8"
+    ];
+    saveModel -> writeString [
+        label = "4.1 write strings",
+        color = "#9333EA", fontcolor = "#9333EA", style=dashed
+    ];
+    saveModel -> writeFloatVector [
+        label = "4.2 write vectors",
+        color = "#9333EA", fontcolor = "#9333EA", style=dashed
+    ];
+
+    // --- PHASE 6: Interactive Search Loop ---
+    main -> embedText [
+        label = "5.1 while(true): embed user query",
+        color = "#0D9488", fontcolor = "#0D9488", penwidth=2.0
+    ];
+    main -> cosineSimilarity [
+        label = "5.2 Score query vs all paragraphs",
+        color = "#0D9488", fontcolor = "#0D9488", penwidth=2.0
+    ];
+}
