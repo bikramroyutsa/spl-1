@@ -98,18 +98,33 @@ int main(){
             break;
         }
         vector<float> query = embedText(s, merges, stoi, embeddings, embeddingSize, tokenWeights);
-        float similarityScore = -1;
         Pnode matchedP;
+        vector<pair<Pnode, float>> matches;
         for(Pnode& p: paraNodes){
             float sim =  cosineSimilarity(query, p.emb);
-            if(sim > similarityScore){
-                matchedP = p;
-                similarityScore = sim;
+            if(matches.size() < 5){
+                matches.push_back({p, sim});
+            }else{
+                int minIdx = 0;
+                for (int i = 1; i < matches.size(); i++) {
+                    if (matches[i].second < matches[minIdx].second) {
+                        minIdx = i;
+                    }
+                }
+                if (sim > matches[minIdx].second) {
+                    matches[minIdx] = {p, sim};
+                }
             }
         }
-        fs::path p(matchedP.parentFilePath);
-        cout << "file " << matchedP.parentFilePath << "\n";
-        cout << "score " << similarityScore << "\n";
-        cout << "relevant text -> \n" << matchedP.text << "\n\n";
+        sort(matches.begin(), matches.end(), [](auto& a, auto& b){
+            return a.second > b.second;
+        });
+        cout << "Top 5 matches" << endl;
+        for (int i = 0; i < 5; i++) {
+            const Pnode& p = matches[i].first;
+            float score = matches[i].second;
+            cout << "[" << i + 1 << "] :" << score << " " << p.parentFilePath << endl;
+            cout << "text:  " << p.text << "\n\n";
+        }
     }
 }
