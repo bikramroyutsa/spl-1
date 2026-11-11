@@ -91,8 +91,8 @@ int main(){
     }
     bool loop = true;
     while(loop){
-        cout << "Enter your query: " << endl;
-        cout << "=> ";
+        cout << "\033[1;36mEnter your query: \033[0m" << endl;
+        cout << "\033[1;32m=> \033[0m";
         string s;
         if (!getline(cin, s) || s == "exit" || s.empty()) {
             break;
@@ -119,12 +119,12 @@ int main(){
         sort(matches.begin(), matches.end(), [](auto& a, auto& b){
             return a.second > b.second;
         });
-        cout << "Top 5 matches" << endl;
+        cout << "\033[1;33mTop 5 matches\033[0m" << endl;
         for (int i = 0; i < 5; i++) {
             const Pnode& p = matches[i].first;
             float score = matches[i].second;
-            cout << "[" << i + 1 << "] :" << score << " " << p.parentFilePath << endl;
-            cout << "text:  " << p.text << "\n\n";
+            cout << "\033[1;32m[" << i + 1 << "] :\033[0m\033[33m" << score << "\033[0m \033[36m" << p.parentFilePath << "\033[0m" << endl;
+            cout << "\033[90mtext:  \033[0m" << p.text << "\n\n";
         }
     }
 }
